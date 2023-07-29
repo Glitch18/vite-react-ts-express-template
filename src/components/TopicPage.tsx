@@ -24,7 +24,7 @@ const TopicPage: React.FC = () => {
       </Link>
       <div className="flex flex-col items-center">
         <h1 className="text-center mt-10">
-          {subjectId} - {typeId}
+          {subjectId} - {typeId?.toUpperCase()}
         </h1>
         {topics.map((topic: any) => (
           <Link

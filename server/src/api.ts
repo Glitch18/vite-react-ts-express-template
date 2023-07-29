@@ -21,7 +21,7 @@ const db = new sqlite3.Database(
 // API to fetch all subjects
 apiRouter.get("/subjects", (req, res) => {
   db.all(
-    'SELECT name FROM sqlite_master WHERE type="table"',
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '%X'",
     [],
     (err, rows) => {
       if (err) {
@@ -60,7 +60,9 @@ apiRouter.get("/questions/:subjectId/:typeId/:topicId", (req, res) => {
   let query;
   let queryParams;
   if (typeId !== "mcq") {
-    query = `SELECT * FROM ${subjectId.concat()} WHERE Topic = ? AND Type = ?`;
+    query = `SELECT * FROM ${subjectId.concat(
+      "X"
+    )} WHERE Topic = ? AND Type = ?`;
     queryParams = [topicId, typeId.toUpperCase()];
   } else {
     query = `SELECT * FROM ${subjectId} WHERE Topic = ?`;

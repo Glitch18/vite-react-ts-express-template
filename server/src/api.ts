@@ -8,7 +8,7 @@ const sqlite3 = verbose();
 const apiRouter = express.Router();
 
 // Initialize your sqlite database
-let db = new sqlite3.Database(
+const db = new sqlite3.Database(
   path.join(__dirname, "../questionBank.db"),
   (err) => {
     if (err) {
@@ -33,9 +33,18 @@ apiRouter.get("/subjects", (req, res) => {
 });
 
 // API to fetch all topics for a given subject
-apiRouter.get("/subjects/:subjectId/topics", (req, res) => {
+apiRouter.get("/topics/:subjectId/:typeId/", (req, res) => {
   const subjectId = req.params.subjectId;
-  db.all(`SELECT DISTINCT Topic FROM ${subjectId}`, [], (err, rows) => {
+  const typeId = req.params.typeId;
+  let query;
+
+  if (typeId !== "mcq") {
+    query = `SELECT DISTINCT Topic FROM ${subjectId.concat(
+      "X"
+    )} WHERE Type = "${typeId.toUpperCase()}"`;
+  } else query = `SELECT DISTINCT Topic FROM ${subjectId}`;
+
+  db.all(query, [], (err, rows) => {
     if (err) {
       throw err;
     }
@@ -44,19 +53,26 @@ apiRouter.get("/subjects/:subjectId/topics", (req, res) => {
 });
 
 // API to fetch all questions for a given topic in a subject
-apiRouter.get("/topics/:topicId/questions", (req, res) => {
+apiRouter.get("/questions/:subjectId/:typeId/:topicId", (req, res) => {
+  const subjectId = req.params.subjectId;
+  const typeId = req.params.typeId;
   const topicId = req.params.topicId;
-  const subjectId = req.query.subjectId;
-  db.all(
-    `SELECT * FROM ${subjectId} WHERE Topic = ?`,
-    [topicId],
-    (err, rows) => {
-      if (err) {
-        throw err;
-      }
-      res.json(rows);
+  let query;
+  let queryParams;
+  if (typeId !== "mcq") {
+    query = `SELECT * FROM ${subjectId.concat()} WHERE Topic = ? AND Type = ?`;
+    queryParams = [topicId, typeId.toUpperCase()];
+  } else {
+    query = `SELECT * FROM ${subjectId} WHERE Topic = ?`;
+    queryParams = [topicId];
+  }
+
+  db.all(query, queryParams, (err, rows) => {
+    if (err) {
+      throw err;
     }
-  );
+    res.json(rows);
+  });
 });
 
 export default apiRouter;

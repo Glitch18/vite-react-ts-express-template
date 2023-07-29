@@ -3,14 +3,17 @@ import { Link, useLocation, useParams } from "react-router-dom";
 
 const TopicPage: React.FC = () => {
   const [topics, setTopics] = useState<{ Topic: string }[]>([]);
-  const { subjectId } = useParams<{ subjectId: string }>();
+  const { subjectId, typeId } = useParams<{
+    subjectId: string;
+    typeId: string;
+  }>();
   const location = useLocation();
 
   useEffect(() => {
-    fetch(`/api/subjects/${subjectId}/topics`)
+    fetch(`/api/topics/${subjectId}/${typeId}`)
       .then((response) => response.json())
       .then((data) => setTopics(data));
-  }, [subjectId, location]);
+  }, [subjectId, typeId, location]);
 
   return (
     <div>
@@ -20,10 +23,12 @@ const TopicPage: React.FC = () => {
         </button>
       </Link>
       <div className="flex flex-col items-center">
-        <h1 className="text-center mt-10">{subjectId}</h1>
+        <h1 className="text-center mt-10">
+          {subjectId} - {typeId}
+        </h1>
         {topics.map((topic: any) => (
           <Link
-            to={`/questions/${subjectId}/topics/${topic.Topic}`}
+            to={`/questions/${subjectId}/${typeId}/${topic.Topic}`}
             key={topic.Topic}
           >
             <button className="w-auto mt-4 bg-red-500 text-white rounded text-xl p-5">

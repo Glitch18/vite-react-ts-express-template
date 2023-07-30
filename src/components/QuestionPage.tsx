@@ -70,10 +70,16 @@ const QuestionPage: React.FC = () => {
   };
 
   const handleJumpTo = (event: any) => {
-    const index = event.target.value - 1;
-    if (index >= 0 && index < questions.length) {
-      setCurrentQuestionIndex(index);
+    const inputValue = event.target.value;
+    if (inputValue === "") {
+      setCurrentQuestionIndex(-1);
       setSelectedAnswer("");
+    } else {
+      const index = parseInt(inputValue) - 1;
+      if (index >= 0 && index < questions.length) {
+        setCurrentQuestionIndex(index);
+        setSelectedAnswer("");
+      }
     }
   };
 
@@ -81,7 +87,8 @@ const QuestionPage: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  const question = questions[currentQuestionIndex];
+  const question =
+    questions[currentQuestionIndex === -1 ? 0 : currentQuestionIndex];
 
   return (
     <div>
@@ -163,7 +170,9 @@ const QuestionPage: React.FC = () => {
             max={questions.length}
             onChange={handleJumpTo}
             className="text-black mr-1"
-            placeholder={`${currentQuestionIndex + 1}`}
+            value={
+              currentQuestionIndex === -1 ? "" : `${currentQuestionIndex + 1}`
+            }
           />
           Of {questions.length}
         </div>

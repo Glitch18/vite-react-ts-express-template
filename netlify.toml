@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"  # Replace with the command to build your React app
+  publish = "./dist"  # Replace with the path to your built assets
+
+[dev]
+  command = "npm run start"  # Replace with your development server start command
